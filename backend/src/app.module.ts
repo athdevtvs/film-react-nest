@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { MongooseModule } from '@nestjs/mongoose';
 import { configProvider, AppConfig } from './app.config.provider';
 import { FilmsModule } from './films/films.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FilmsModule } from './films/films.module';
       rootPath: path.join(__dirname, '..', 'public'),
     }),
     FilmsModule,
+    OrderModule,
   ],
 })
 export class AppModule {}

@@ -53,9 +53,6 @@ export interface CreateOrderBase {
 }
 
 export class CreateOrderDto extends ContactsDto {
-  @IsString()
-  id!: string;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => GetTicketDto)

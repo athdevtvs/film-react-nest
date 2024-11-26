@@ -7,7 +7,6 @@ import {
   IsInt,
   Min,
   Max,
-  IsMongoId,
 } from 'class-validator';
 
 export class BaseScheduleDto {
@@ -76,42 +75,7 @@ export class GetFilmDto {
   schedule: GetScheduleDto[];
 }
 
-export class CreateScheduleDto extends BaseScheduleDto {}
-
-export class CreateFilmDto {
-  @IsNumber()
-  @Min(0)
-  @Max(10)
-  readonly rating: number;
-
-  @IsString()
-  readonly director: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly tags: string[];
-
-  @IsFQDN()
-  readonly image: string;
-
-  @IsFQDN()
-  readonly cover: string;
-
-  @IsString()
-  readonly title: string;
-
-  @IsString()
-  readonly about: string;
-
-  @IsString()
-  readonly description: string;
-
-  @IsArray()
-  @ArrayNotEmpty()
-  readonly schedule: GetScheduleDto[];
-}
-
 export class FilmScheduleParams {
-  @IsMongoId()
+  @IsString()
   id: string;
 }

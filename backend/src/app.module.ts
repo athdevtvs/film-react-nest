@@ -22,6 +22,9 @@ import { FilmsModule } from './films/films.module';
       },
       inject: [ConfigService],
     }),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'public'),
+    }),
     FilmsModule,
   ],
 })

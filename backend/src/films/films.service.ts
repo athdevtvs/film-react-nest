@@ -3,6 +3,10 @@ import { AppConfig } from '../app.config.provider';
 import { FilmsRepository } from '../repository/films.repository';
 import { ConfigService } from '@nestjs/config';
 import { GetFilmDto, GetScheduleDto } from './dto/films.dto';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '../exceptions';
 
 @Injectable()
 export class FilmsService {
@@ -16,7 +20,7 @@ export class FilmsService {
       this.configService.get<AppConfig['database']>('app.database')?.driver;
 
     if (databaseDriver !== 'mongodb') {
-      throw new Error('Неподдерживаемый драйвер базы данных');
+      throw new BadRequestException('Неподдерживаемый драйвер базы данных');
     }
   }
 
@@ -27,7 +31,7 @@ export class FilmsService {
     try {
       return await operation();
     } catch (error) {
-      throw new Error(
+      throw new InternalServerErrorException(
         `Не удалось ${operationDescription}. Ошибка: ${error.message}`,
       );
     }

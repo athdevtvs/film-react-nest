@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GetFilmDto, GetScheduleDto } from '../films/dto/films.dto';
 import { Film } from '../films/schemas/films.schema';
+import { NotFoundException } from '../exceptions';
 
 @Injectable()
 export class FilmsRepository {
@@ -22,7 +23,7 @@ export class FilmsRepository {
     return await this.filmModel
       .findOne({ id: id })
       .lean<GetFilmDto>()
-      .orFail(() => new Error(`Фильм с ID ${id} не найден`));
+      .orFail(() => new NotFoundException(`Фильм с ID ${id} не найден`));
   }
 
   async updateFilmScheduleById(
@@ -35,7 +36,9 @@ export class FilmsRepository {
     );
 
     if (result.modifiedCount === 0) {
-      throw new Error(`Не удалось обновить расписание для фильма с ID ${id}.`);
+      throw new NotFoundException(
+        `Не удалось обновить расписание для фильма с ID ${id}`,
+      );
     }
 
     return result;

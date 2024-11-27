@@ -11,7 +11,7 @@ export interface AppConfigDatabase {
 
 export const configProvider = registerAs<AppConfig>('app', () => ({
   database: {
-    url: process.env.DB_URL ?? 'mongodb://localhost:27017/afisha',
-    driver: process.env.DB_DRIVER ?? 'mongodb',
+    url: process.env.DATABASE_URL ?? 'mongodb://localhost:27017/afisha',
+    driver: process.env.DATABASE_DRIVER ?? 'mongodb',
   },
 }));

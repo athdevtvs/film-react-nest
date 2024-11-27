@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-//import { v4 as uuidv4 } from 'uuid';
 import { GetFilmDto } from '../films/dto/films.dto';
-import { CreateOrderDto, PlaceTicketDto } from './dto/order.dto';
+import { CreateOrderDto, GetTicketDto } from './dto/order.dto';
 import { FilmsRepository } from '../repository/films.repository';
 import { OrderRepository } from '../repository/order.repository';
 import {
@@ -79,7 +78,7 @@ export class OrderService {
 
   async placeOrder(
     createOrderDto: Omit<CreateOrderDto, 'id'>,
-  ): Promise<{ total: number; items: PlaceTicketDto[] }> {
+  ): Promise<{ total: number; items: GetTicketDto[] }> {
     const films = await this.getFilmsByTickets(createOrderDto.tickets);
 
     this.validateTickets(createOrderDto.tickets, films);
@@ -92,7 +91,7 @@ export class OrderService {
 
     return {
       total: order.tickets.length,
-      items: order.orderData,
+      items: order.tickets,
     };
   }
 }

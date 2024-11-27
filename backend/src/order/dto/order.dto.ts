@@ -17,12 +17,6 @@ export class GetTicketDto {
   @IsString()
   daytime: string;
 
-  @IsString()
-  day: string;
-
-  @IsString()
-  time: string;
-
   @IsNumber()
   row: number;
 

@@ -8,6 +8,5 @@ import { FilmsModule } from '../films/films.module';
   imports: [FilmsModule],
   controllers: [OrderController],
   providers: [OrderRepository, OrderService],
-  exports: [OrderService],
 })
 export class OrderModule {}

@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import {
-  CreateOrderDto,
-  GetTicketDto,
-  CreateOrderBase,
-} from '../order/dto/order.dto';
+import { CreateOrderDto, GetTicketDto } from '../order/dto/order.dto';
 import { BadRequestException } from '../exceptions';
 
 @Injectable()
-export class OrdersRepository {
+export class OrderRepository {
   private orders: CreateOrderDto[] = [];
 
   private areTicketsEqual(
@@ -46,12 +42,13 @@ export class OrdersRepository {
     }));
   }
 
-  createOrder(order: CreateOrderBase): CreateOrderDto {
+  createOrder(order: Omit<CreateOrderDto, 'id'>): CreateOrderDto {
     this.ensureNoDuplicateTickets(order.tickets);
 
     const ticketsWithId = this.generateTicketsWithId(order.tickets);
 
     const newOrder = new CreateOrderDto();
+    newOrder.id = faker.string.uuid();
     newOrder.email = order.email;
     newOrder.phone = order.phone;
     newOrder.tickets = ticketsWithId;

@@ -6,10 +6,10 @@ import { CreateOrderDto, PlaceTicketDto } from './dto/order.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
+  @Post('/')
   async createOrder(
     @Body() order: CreateOrderDto,
   ): Promise<{ total: number; items: PlaceTicketDto[] }> {
-    return await this.orderService.placeOrder(order);
+    return this.orderService.placeOrder(order);
   }
 }

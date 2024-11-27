@@ -1,58 +1,62 @@
-import { IsString, IsNumber, ValidateNested, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  ValidateNested,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GetTicketDto {
   @IsString()
-  film!: string;
+  film: string;
 
   @IsString()
-  session!: string;
+  session: string;
 
   @IsString()
-  daytime!: string;
+  daytime: string;
 
   @IsString()
-  day!: string;
+  day: string;
 
   @IsString()
-  time!: string;
+  time: string;
 
   @IsNumber()
-  row!: number;
+  row: number;
 
   @IsNumber()
-  seat!: number;
+  seat: number;
 
   @IsNumber()
-  price!: number;
+  price: number;
 }
 
 export class PlaceTicketDto {
   @IsString()
-  filmId!: string;
+  filmId: string;
 
   @IsString()
-  sessionId!: string;
+  sessionId: string;
 
   @IsString()
-  seatsSelection!: string;
+  seatsSelection: string;
 }
 
 class ContactsDto {
   @IsString()
-  email!: string;
+  email: string;
 
   @IsString()
-  phone!: string;
-}
-
-export interface CreateOrderBase {
-  email: string;
   phone: string;
-  tickets: GetTicketDto[];
 }
 
 export class CreateOrderDto extends ContactsDto {
+  @IsString()
+  @IsOptional()
+  id?: string; // Необязательный, так как репозиторий генерирует его
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => GetTicketDto)

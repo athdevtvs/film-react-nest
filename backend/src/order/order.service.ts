@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+//import { v4 as uuidv4 } from 'uuid';
 import { GetFilmDto } from '../films/dto/films.dto';
 import { CreateOrderDto, PlaceTicketDto } from './dto/order.dto';
 import { FilmsRepository } from '../repository/films.repository';
-import { OrdersRepository } from '../repository/order.repository';
+import { OrderRepository } from '../repository/order.repository';
 import {
   NotFoundException,
   BadRequestException,
@@ -13,7 +14,7 @@ import {
 export class OrderService {
   constructor(
     private readonly filmsRepository: FilmsRepository,
-    private readonly ordersRepository: OrdersRepository,
+    private readonly ordersRepository: OrderRepository,
   ) {}
 
   private async getFilmsByTickets(
@@ -77,13 +78,15 @@ export class OrderService {
   }
 
   async placeOrder(
-    createOrderDto: CreateOrderDto,
+    createOrderDto: Omit<CreateOrderDto, 'id'>,
   ): Promise<{ total: number; items: PlaceTicketDto[] }> {
     const films = await this.getFilmsByTickets(createOrderDto.tickets);
 
     this.validateTickets(createOrderDto.tickets, films);
 
-    const order = this.ordersRepository.createOrder(createOrderDto);
+    const order = this.ordersRepository.createOrder({
+      ...createOrderDto,
+    });
 
     await this.updateTakenSeats(createOrderDto.tickets, films);
 

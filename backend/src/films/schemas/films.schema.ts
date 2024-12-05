@@ -57,7 +57,7 @@ export class Schedule {
   @RequiredArrayProp(String)
   @IsArray()
   @ArrayNotEmpty()
-  taken: string[];
+  taken: string | string[];
 }
 
 const ScheduleSchema = SchemaFactory.createForClass(Schedule);

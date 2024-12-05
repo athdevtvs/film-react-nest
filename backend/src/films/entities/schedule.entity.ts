@@ -47,7 +47,7 @@ export class Schedules {
   @Column({ type: 'text', nullable: true })
   @IsOptional()
   @IsString()
-  taken: string;
+  taken: string | string[];
 
   @ManyToOne(() => Films, (film) => film.schedule)
   film: Films;

@@ -79,17 +79,35 @@ export class OrderService {
       const schedule = film.schedule.find((s) => s.daytime === ticket.daytime);
 
       if (schedule) {
-        const alreadyTakenSeats = schedule.taken
-          ? schedule.taken.split(',')
-          : [];
-        const newSeats = orderData.getOrderData.flatMap(
-          (order) => order.seatsSelection,
-        );
+        let takenSeats: string[] = [];
 
-        const updatedTakenSeats = Array.from(
-          new Set([...alreadyTakenSeats, ...newSeats]),
-        );
-        schedule.taken = updatedTakenSeats.join(',');
+        if (typeof schedule.taken === 'string') {
+          takenSeats = schedule.taken.split(',');
+        } else if (Array.isArray(schedule.taken)) {
+          takenSeats = schedule.taken;
+        }
+
+        if (this.databaseDriver === 'postgres') {
+          const newSeats = orderData
+            ? orderData.getOrderData.flatMap((order) => order.seatsSelection)
+            : [];
+
+          const sanitizedTakenSeats = takenSeats.filter(
+            (seat) => seat.trim() !== '',
+          );
+
+          const updatedTakenSeats = Array.from(
+            new Set([...sanitizedTakenSeats, ...newSeats]),
+          );
+
+          schedule.taken = updatedTakenSeats.join(',');
+        } else if (this.databaseDriver === 'mongodb') {
+          tickets.forEach((t) => {
+            takenSeats.push(`${t.row}:${t.seat}`);
+          });
+
+          schedule.taken = takenSeats;
+        }
 
         await this.filmsRepository.updateFilmScheduleById(
           ticket.film,

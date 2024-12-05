@@ -10,7 +10,7 @@ import { Schedules } from '../films/entities/schedule.entity';
 @Module({})
 export class DatabaseModule {
   static forRootAsync(): DynamicModule {
-    const databaseDriver = process.env.DATABASE_DRIVER;
+    const databaseDriver = process.env.DATABASE_DRIVER ?? 'postgres';
 
     if (databaseDriver === 'postgres') {
       return {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { AppConfig } from '../app.config.provider';
 import { FilmsRepository } from '../repository/films.repository';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +12,7 @@ import {
 export class FilmsService {
   constructor(
     private configService: ConfigService,
+    @Inject('FILM_REPOSITORY')
     private readonly filmsRepository: FilmsRepository,
   ) {}
 

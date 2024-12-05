@@ -4,8 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
 import { configProvider, AppConfig } from './app.config.provider';
+import { DatabaseModule } from './database/database.module';
 import { FilmsModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,8 +29,9 @@ import { OrderModule } from './order/order.module';
       },
       inject: [ConfigService],
     }),
-    FilmsModule,
-    OrderModule,
+    DatabaseModule.forRootAsync(),
+    FilmsModule.forDatabase(),
+    OrderModule.forRootAsync(),
   ],
 })
 export class AppModule {}

@@ -1,28 +1,26 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import { InternalServerErrorException } from '../exceptions';
 import { AppConfig } from '../app.config.provider';
 import { FilmsRepository } from '../repository/films.repository';
-import { ConfigService } from '@nestjs/config';
+import { FilmsRepositoryPostgres } from '../repository/films.repository.postgres';
+
 import { GetFilmDto, GetScheduleDto } from './dto/films.dto';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '../exceptions';
+import { Films } from './entities/film.entity';
+import { Schedules } from './entities/schedule.entity';
 
 @Injectable()
 export class FilmsService {
+  private readonly databaseDriver: string;
+
   constructor(
     private configService: ConfigService,
     @Inject('FILM_REPOSITORY')
-    private readonly filmsRepository: FilmsRepository,
-  ) {}
-
-  private ensureMongoDriver(): void {
-    const databaseDriver =
+    private readonly filmsRepository: FilmsRepository | FilmsRepositoryPostgres,
+  ) {
+    this.databaseDriver =
       this.configService.get<AppConfig['database']>('app.database')?.driver;
-
-    if (databaseDriver !== 'mongodb') {
-      throw new BadRequestException('Неподдерживаемый драйвер базы данных');
-    }
   }
 
   private async handleDatabaseOperation<T>(
@@ -38,8 +36,7 @@ export class FilmsService {
     }
   }
 
-  async findAll(): Promise<{ total: number; items: GetFilmDto[] }> {
-    this.ensureMongoDriver();
+  async findAll(): Promise<{ total: number; items: GetFilmDto[] | Films[] }> {
     return this.handleDatabaseOperation(
       () => this.filmsRepository.findAllFilms(),
       'получить все фильмы',
@@ -48,11 +45,13 @@ export class FilmsService {
 
   async findById(
     id: string,
-  ): Promise<{ total: number; items: GetScheduleDto[] }> {
-    this.ensureMongoDriver();
+  ): Promise<{ total: number; items: GetScheduleDto[] | Schedules[] }> {
     return this.handleDatabaseOperation(async () => {
       const result = await this.filmsRepository.findFilmById(id);
-      return { total: result.schedule.length, items: result.schedule };
+      if (result && result.schedule) {
+        return { total: result.schedule.length, items: result.schedule };
+      }
+      return { total: 0, items: [] };
     }, `получить фильм с ID ${id}`);
   }
 }

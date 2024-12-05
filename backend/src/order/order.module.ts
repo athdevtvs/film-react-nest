@@ -1,9 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { OrderController } from './order.controller';
+
 import { OrderRepository } from '../repository/order.repository';
-import { OrderService } from './order.service';
 import { FilmsModule } from '../films/films.module';
+
+import { OrderController } from './order.controller';
+import { OrderService } from './order.service';
 
 @Module({})
 export class OrderModule {

@@ -55,4 +55,12 @@ export class CreateOrderDto extends ContactsDto {
   @ValidateNested({ each: true })
   @Type(() => GetTicketDto)
   tickets!: GetTicketDto[];
+
+  get getOrderData(): PlaceTicketDto[] {
+    return this.tickets.map((ticket) => ({
+      filmId: ticket.film,
+      sessionId: ticket.session,
+      seatsSelection: `${ticket.row}:${ticket.seat}`,
+    }));
+  }
 }

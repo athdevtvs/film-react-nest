@@ -1,21 +1,33 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { GetFilmDto } from '../films/dto/films.dto';
-import { CreateOrderDto, GetTicketDto } from './dto/order.dto';
-import { FilmsRepository } from '../repository/films.repository';
-import { OrderRepository } from '../repository/order.repository';
+import { ConfigService } from '@nestjs/config';
+
 import {
   NotFoundException,
   BadRequestException,
   ConflictException,
 } from '../exceptions';
+import { FilmsRepository } from '../repository/films.repository';
+import { FilmsRepositoryPostgres } from '../repository/films.repository.postgres';
+import { OrderRepository } from '../repository/order.repository';
+import { AppConfig } from 'src/app.config.provider';
+
+import { GetFilmDto } from '../films/dto/films.dto';
+import { CreateOrderDto, GetTicketDto } from './dto/order.dto';
+import { Schedules } from 'src/films/entities/schedule.entity';
 
 @Injectable()
 export class OrderService {
+  private readonly databaseDriver: string;
+
   constructor(
+    private configService: ConfigService,
     @Inject('FILM_REPOSITORY')
-    private readonly filmsRepository: FilmsRepository,
+    private readonly filmsRepository: FilmsRepository | FilmsRepositoryPostgres,
     private readonly ordersRepository: OrderRepository,
-  ) {}
+  ) {
+    this.databaseDriver =
+      this.configService.get<AppConfig['database']>('app.database')?.driver;
+  }
 
   private async getFilmsByTickets(
     tickets: CreateOrderDto['tickets'],
@@ -58,20 +70,30 @@ export class OrderService {
   private async updateTakenSeats(
     tickets: CreateOrderDto['tickets'],
     films: GetFilmDto[],
+    orderData?: CreateOrderDto,
   ): Promise<void> {
     for (const ticket of tickets) {
       const film = films.find((f) => f.id === ticket.film);
       if (!film) continue;
 
-      const schedule = film.schedule.find(
-        (s) => s.id === ticket.session && s.daytime === ticket.daytime,
-      );
+      const schedule = film.schedule.find((s) => s.daytime === ticket.daytime);
 
       if (schedule) {
-        schedule.taken.push(`${ticket.row}:${ticket.seat}`);
+        const alreadyTakenSeats = schedule.taken
+          ? schedule.taken.split(',')
+          : [];
+        const newSeats = orderData.getOrderData.flatMap(
+          (order) => order.seatsSelection,
+        );
+
+        const updatedTakenSeats = Array.from(
+          new Set([...alreadyTakenSeats, ...newSeats]),
+        );
+        schedule.taken = updatedTakenSeats.join(',');
+
         await this.filmsRepository.updateFilmScheduleById(
           ticket.film,
-          film.schedule,
+          film.schedule as Schedules[],
         );
       }
     }
@@ -88,7 +110,7 @@ export class OrderService {
       ...createOrderDto,
     });
 
-    await this.updateTakenSeats(createOrderDto.tickets, films);
+    await this.updateTakenSeats(createOrderDto.tickets, films, order);
 
     return {
       total: order.tickets.length,

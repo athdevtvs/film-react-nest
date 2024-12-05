@@ -31,7 +31,7 @@ export class BaseScheduleDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  taken: string[];
+  taken: string;
 }
 
 export class GetScheduleDto extends BaseScheduleDto {

@@ -1,33 +1,30 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '../app.config.provider';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Film, FilmSchema } from './schemas/films.schema';
 import { FilmsController } from './films.controller';
-import { FilmsRepository } from '../repository/films.repository';
 import { FilmsService } from './films.service';
+import { FilmsRepository } from '../repository/films.repository';
+import { FilmsRepositoryPostgres } from '../repository/films.repository.postgres';
+import { Films } from './entities/film.entity';
 
 @Module({})
 export class FilmsModule {
-  static databaseDriver: string;
-
-  constructor(private configService: ConfigService) {
-    FilmsModule.databaseDriver =
-      this.configService.get<AppConfig['database']>('app.database')?.driver;
-  }
-
   static forDatabase(): DynamicModule {
-    const isMongo = this.databaseDriver === 'mongodb';
+    const isMongo = process.env.DATABASE_DRIVER === 'mongodb';
 
     return {
       module: FilmsModule,
-      imports: [
-        MongooseModule.forFeature([{ name: Film.name, schema: FilmSchema }]),
-      ],
+      imports: isMongo
+        ? [MongooseModule.forFeature([{ name: Film.name, schema: FilmSchema }])]
+        : [TypeOrmModule.forFeature([Films])],
       controllers: [FilmsController],
       providers: [
         FilmsService,
-        { provide: 'FILM_REPOSITORY', useClass: FilmsRepository },
+        isMongo
+          ? { provide: 'FILM_REPOSITORY', useClass: FilmsRepository }
+          : { provide: 'FILM_REPOSITORY', useClass: FilmsRepositoryPostgres },
       ],
       exports: ['FILM_REPOSITORY'],
     };

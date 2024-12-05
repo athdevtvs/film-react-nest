@@ -2,7 +2,10 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppConfig } from 'src/app.config.provider';
+import { Films } from '../films/entities/film.entity';
+import { Schedules } from '../films/entities/schedule.entity';
 
 @Module({})
 export class DatabaseModule {
@@ -22,6 +25,7 @@ export class DatabaseModule {
                 type: 'postgres',
                 url: dbConfig.url,
                 autoLoadEntities: true,
+                entities: [Films, Schedules],
                 synchronize: false,
                 retryAttempts: 3,
               };
@@ -50,6 +54,6 @@ export class DatabaseModule {
       };
     }
 
-    throw new Error(`Unsupported database driver: ${databaseDriver}`);
+    throw new Error(`Неподдерживаемый драйвер базы данных: ${databaseDriver}`);
   }
 }

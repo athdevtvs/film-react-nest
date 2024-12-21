@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { Card } from './Card';
-import {CDN_URL} from "../../utils/constants.ts";
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+import { Card } from "./Card";
+import { CDN_URL } from "../../utils/constants.ts";
 
 const meta = {
-  title: 'UI/Card',
+  title: "UI/Card",
   component: Card,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
   args: {
-    onClick: fn()
+    onClick: fn(),
   },
 } satisfies Meta<typeof Card>;
 
@@ -19,7 +19,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    id: "1",
     image: `${CDN_URL}/bg1s.jpg`,
-    text: 'Архитекторы общества',
+    title: "Архитекторы общества",
   },
 };

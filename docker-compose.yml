@@ -6,9 +6,8 @@ services:
       - postgres
     networks:
       - webnet
-    environment:
-      - DATABASE_DRIVER=postgres
-      - DATABASE_URL=postgres://prac:test@postgres:5432/prac
+    env_file:
+      - backend/.env
     restart: unless-stopped
 
   frontend:
@@ -18,9 +17,8 @@ services:
       - webnet
     volumes:
       - frontend_dist:/app/dist
-    environment:
-      - VITE_API_URL=https://athdevtvs.students.nomorepartiesco.ru/api/afisha
-      - VITE_CDN_URL=https://athdevtvs.students.nomorepartiesco.ru/content/afisha
+    env_file:
+      - frontend/.env
 
   postgres:
     container_name: postgrescv

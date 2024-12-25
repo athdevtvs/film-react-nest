@@ -50,3 +50,18 @@ jobs:
         file: ./frontend/Dockerfile
         push: true
         tags: ghcr.io/${{ github.repository }}/frontend:latest
+
+    - name: Rebuild and Deploy Docker Containers via SSH
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd app
+          sudo docker compose down
+          yes | sudo docker system prune -a --volumes
+          sudo docker volume rm film-react-nest_frontend_dist || true
+          git pull origin review-3
+          sudo docker compose up -d --build
+          sudo docker ps

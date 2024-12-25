@@ -28,7 +28,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-      - ./database-init.sql:/docker-entrypoint-initdb.d
+      - ./database-init/:/docker-entrypoint-initdb.d
       - postgres_data:/usr/local/pgsql/data
     restart: unless-stopped
     networks:

@@ -5,9 +5,9 @@ CREATE database prac
 
 GRANT ALL PRIVILEGES ON DATABASE prac TO prac; 
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 \c prac;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS public.films
 (

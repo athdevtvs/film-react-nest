@@ -6,8 +6,9 @@ services:
       - postgres
     networks:
       - webnet
-    env_file:
-      - backend/.env
+    environment:
+      - DATABASE_DRIVER=postgres
+      - DATABASE_URL=postgres://prac:test@postgres:5432/prac
     restart: unless-stopped
 
   frontend:
@@ -17,20 +18,22 @@ services:
       - webnet
     volumes:
       - frontend_dist:/app/dist
-    env_file:
-      - frontend/.env
+    environment:
+      - VITE_API_URL=https://athdevtvs.students.nomorepartiesco.ru/api/afisha
+      - VITE_CDN_URL=https://athdevtvs.students.nomorepartiesco.ru/content/afisha
 
   postgres:
     container_name: postgrescv
     image: postgres:14.8-alpine3.18
-    env_file:
-      - backend/.env
     volumes:
       - ./database-init.sql:/docker-entrypoint-initdb.d/database-init.sql
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - webnet
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
   pgadmin:
     image: dpage/pgadmin4:7.2
@@ -74,10 +77,10 @@ services:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
 
-networks:
-  webnet:
-
 volumes:
   postgres-data:
   pgadmin-data:
   frontend_dist:
+
+networks:
+  webnet:

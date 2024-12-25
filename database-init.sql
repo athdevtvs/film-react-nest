@@ -1,13 +1,14 @@
 CREATE USER prac WITH PASSWORD 'test'; 
 
-CREATE database prac
-    with owner prac;
+CREATE database prac WITH OWNER prac;
 
 GRANT ALL PRIVILEGES ON DATABASE prac TO prac; 
 
-\c prac;
+\c prac postgres
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+SET ROLE prac;
 
 CREATE TABLE IF NOT EXISTS public.films
 (

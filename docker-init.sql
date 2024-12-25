@@ -1,7 +1,7 @@
 CREATE USER prac WITH PASSWORD 'test'; 
 
 CREATE database prac
-    with owner prac;
+    with owner postgres;
 
 GRANT ALL PRIVILEGES ON DATABASE prac TO prac; 
 

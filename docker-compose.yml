@@ -21,13 +21,12 @@ services:
       - frontend/.env
 
   postgres:
-    container_name: postgres
+    container_name: postgrescv
     image: postgres:14.8-alpine3.18
     env_file:
       - backend/.env
     volumes:
-      - ./docker-init.sql:/docker-entrypoint-initdb.d/docker-init.sql
-      - postgres-data:/var/lib/postgresql/data
+      - ./docker-init.sql:/docker-entrypoint-initdb.d
     restart: unless-stopped
     networks:
       - webnet

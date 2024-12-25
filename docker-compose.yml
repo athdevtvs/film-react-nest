@@ -25,11 +25,9 @@ services:
     image: postgres:14.8-alpine3.18
     env_file:
       - backend/.env
-    environment:
-      POSTGRES_PASSWORD: postgres
     volumes:
-      - ./database-init/:/docker-entrypoint-initdb.d
-      - postgres_data:/usr/local/pgsql/data
+      - ./database-init.sql:/docker-entrypoint-initdb.d/database-init.sql
+      - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - webnet

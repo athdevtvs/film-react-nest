@@ -1,24 +1,27 @@
 import { LoggerService, Injectable } from '@nestjs/common';
+import { Logger as WinstonLogger } from 'winston';
+import { winstonConfig } from './logger.config';
+import * as winston from 'winston';
 
 @Injectable()
-export class JsonLogger implements LoggerService {
+class JsonLogger implements LoggerService {
+  private logger: WinstonLogger;
+
+  constructor() {
+    this.logger = winston.createLogger(winstonConfig);
+  }
+
   private logWithLevel(
-    level: 'log' | 'error' | 'warn',
+    level: 'info' | 'error' | 'warn' | 'debug',
     message: unknown,
     ...optionalParams: unknown[]
   ) {
     const formattedMessage = JSON.stringify({ level, message, optionalParams });
-    const output =
-      level === 'error'
-        ? console.error
-        : level === 'warn'
-          ? console.warn
-          : console.log;
-    output(formattedMessage);
+    this.logger.log(level, formattedMessage);
   }
 
   log(message: unknown, ...optionalParams: unknown[]) {
-    this.logWithLevel('log', message, ...optionalParams);
+    this.logWithLevel('info', message, ...optionalParams);
   }
 
   error(message: unknown, ...optionalParams: unknown[]) {
@@ -28,4 +31,10 @@ export class JsonLogger implements LoggerService {
   warn(message: unknown, ...optionalParams: unknown[]) {
     this.logWithLevel('warn', message, ...optionalParams);
   }
+
+  debug(message: unknown, ...optionalParams: unknown[]) {
+    this.logWithLevel('debug', message, ...optionalParams);
+  }
 }
+
+export default JsonLogger;

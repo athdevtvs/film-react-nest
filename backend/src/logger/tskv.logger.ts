@@ -1,34 +1,42 @@
 import { LoggerService, Injectable } from '@nestjs/common';
+import { Logger as WinstonLogger } from 'winston';
+import { winstonConfig } from './logger.config';
+import * as winston from 'winston';
 
 @Injectable()
-export class TskvLogger implements LoggerService {
+class TskvLogger implements LoggerService {
+  private logger: WinstonLogger;
+
+  constructor() {
+    this.logger = winston.createLogger(winstonConfig);
+  }
+
   private formatMessage(
-    level: 'log' | 'error' | 'warn',
+    level: 'info' | 'error' | 'warn' | 'debug',
     message: unknown,
     optionalParams: unknown[],
   ): string {
+    // Если OptionalParams пуст, полностью опускаем часть с OptionalParams
     const params =
-      optionalParams.length > 0 ? JSON.stringify(optionalParams) : '';
-    return `level=${level}\tmessage=${JSON.stringify(message)}\toptionalParams=${params}\n`;
+      optionalParams.length > 0
+        ? `\toptionalParams=${JSON.stringify(optionalParams)}`
+        : '';
+
+    // Возвращает отформатированное сообщение без лишних пробелов
+    return `level=${level}\tmessage=${JSON.stringify(message)}${params}`;
   }
 
   private logWithLevel(
-    level: 'log' | 'error' | 'warn',
+    level: 'info' | 'error' | 'warn' | 'debug',
     message: unknown,
     ...optionalParams: unknown[]
   ): void {
     const formattedMessage = this.formatMessage(level, message, optionalParams);
-    const output =
-      level === 'error'
-        ? console.error
-        : level === 'warn'
-          ? console.warn
-          : console.log;
-    output(formattedMessage);
+    this.logger.log(level, formattedMessage);
   }
 
   log(message: unknown, ...optionalParams: unknown[]): void {
-    this.logWithLevel('log', message, ...optionalParams);
+    this.logWithLevel('info', message, ...optionalParams);
   }
 
   error(message: unknown, ...optionalParams: unknown[]): void {
@@ -38,4 +46,10 @@ export class TskvLogger implements LoggerService {
   warn(message: unknown, ...optionalParams: unknown[]): void {
     this.logWithLevel('warn', message, ...optionalParams);
   }
+
+  debug(message: unknown, ...optionalParams: unknown[]): void {
+    this.logWithLevel('debug', message, ...optionalParams);
+  }
 }
+
+export default TskvLogger;

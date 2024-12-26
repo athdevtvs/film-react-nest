@@ -1,20 +1,33 @@
 import { Injectable, ConsoleLogger } from '@nestjs/common';
+import { Logger as WinstonLogger } from 'winston';
+import { winstonConfig } from './logger.config';
+import * as winston from 'winston';
+import { Logger } from './logger.service';
 
 @Injectable()
-export class DevLogger extends ConsoleLogger {
+class DevLogger extends ConsoleLogger implements Logger {
+  private logger: WinstonLogger;
+
+  constructor() {
+    super();
+    this.logger = winston.createLogger(winstonConfig);
+  }
+
   log(message: string) {
-    super.log(`[DevLogger] ${message}`);
+    this.logger.info(`[DevLogger] ${message}`);
   }
 
   error(message: string) {
-    super.error(`[DevLogger] ${message}`);
+    this.logger.error(`[DevLogger] ${message}`);
   }
 
   debug(message: string) {
-    super.debug(`[DevLogger] ${message}`);
+    this.logger.debug(`[DevLogger] ${message}`);
   }
 
   fatal(message: string) {
-    super.error(`[DevLogger] ${message}`);
+    this.logger.error(`[FATAL] ${`[DevLogger] ${message}`}`);
   }
 }
+
+export default DevLogger;

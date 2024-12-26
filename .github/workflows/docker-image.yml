@@ -62,6 +62,7 @@ jobs:
           sudo docker compose down
           yes | sudo docker system prune -a --volumes
           sudo docker volume rm film-react-nest_frontend_dist || true
-          git pull origin review-3
+          cp ./backend/.env.example ./backend/.env
+          cp ./frontend/.env.example ./frontend/.env
           sudo docker compose up -d --build
           sudo docker ps

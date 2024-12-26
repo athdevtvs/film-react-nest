@@ -2,7 +2,7 @@
 
 ## Ссылки
 
-На рабочий проект: https://athdevtvs.students.nomorepartiesco.ru/
+На рабочий проект: https://athdevtvs.students.nomorepartiesco.ru/ <br/>
 На pgAdmin: http://athdevtvs.students.nomorepartiesco.ru:8080/
 
 ## Установка

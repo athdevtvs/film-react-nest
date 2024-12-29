@@ -1,18 +1,26 @@
-import {ConfigModule} from "@nestjs/config";
-
-export const configProvider = {
-    imports: [ConfigModule.forRoot()],
-    provide: 'CONFIG',
-    useValue: < AppConfig> {
-        //TODO прочесть переменнные среды
-    },
-}
+import { registerAs } from '@nestjs/config';
 
 export interface AppConfig {
-    database: AppConfigDatabase
+  database: AppConfigDatabase;
 }
 
 export interface AppConfigDatabase {
-    driver: string
-    url: string
+  driver: string;
+  url: string;
 }
+
+export const configProvider = registerAs<AppConfig>('app', () => {
+  const driver = process.env.DATABASE_DRIVER ?? 'postgres';
+  const url =
+    process.env.DATABASE_URL ??
+    (driver === 'postgres'
+      ? 'postgres://prac:test@localhost:5432/prac'
+      : 'mongodb://localhost:27017/afisha');
+
+  return {
+    database: {
+      driver,
+      url,
+    },
+  };
+});
